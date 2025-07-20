@@ -206,3 +206,166 @@ a.secondary {
 .wave2 {
     animation: waveMove2 3s linear infinite alternate;
 }
+
+/* Two-column layout styles */
+.container {
+    min-height: 100vh;
+    padding: 20px;
+    font-family: sans-serif;
+}
+
+.content {
+    display: flex;
+    gap: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+    height: calc(100vh - 40px);
+}
+
+.leftColumn,
+.rightColumn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.infoCard,
+.readmeCard {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    height: 100%;
+    overflow-y: auto;
+}
+
+.avatar {
+    border-radius: 50%;
+    margin: 0 auto 16px auto;
+    display: block;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.repoList {
+    padding-left: 20px;
+    margin: 0;
+}
+
+.repoList li {
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.lang {
+    font-size: 12px;
+    color: #1976d2;
+}
+
+.readmeContent {
+    line-height: 1.6;
+}
+
+.readmeContent h1,
+.readmeContent h2,
+.readmeContent h3 {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    color: #333;
+}
+
+.readmeContent h1 {
+    font-size: 24px;
+    border-bottom: 2px solid #e1e4e8;
+    padding-bottom: 8px;
+}
+
+.readmeContent h2 {
+    font-size: 20px;
+    border-bottom: 1px solid #e1e4e8;
+    padding-bottom: 6px;
+}
+
+.readmeContent h3 {
+    font-size: 18px;
+}
+
+.readmeContent p {
+    margin-bottom: 16px;
+}
+
+.readmeContent a {
+    color: #0366d6;
+    text-decoration: none;
+}
+
+.readmeContent a:hover {
+    text-decoration: underline;
+}
+
+.readmeContent code {
+    background: #f6f8fa;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "Courier New", monospace;
+    font-size: 14px;
+}
+
+.readmeContent strong {
+    font-weight: 600;
+}
+
+.readmeContent em {
+    font-style: italic;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Mobile responsive design */
+@media (max-width: 768px) {
+    .content {
+        flex-direction: column;
+        height: auto;
+        gap: 16px;
+    }
+
+    .leftColumn,
+    .rightColumn {
+        flex: none;
+    }
+
+    .infoCard,
+    .readmeCard {
+        height: auto;
+        max-height: 60vh;
+    }
+
+    .container {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .infoCard,
+    .readmeCard {
+        padding: 16px;
+        max-height: 50vh;
+    }
+
+    .readmeContent h1 {
+        font-size: 20px;
+    }
+
+    .readmeContent h2 {
+        font-size: 18px;
+    }
+
+    .readmeContent h3 {
+        font-size: 16px;
+    }
+}

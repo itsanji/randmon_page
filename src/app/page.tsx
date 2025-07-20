@@ -1,5 +1,8 @@
+'use client';
+
 import styles from './page.module.css';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
 
 const githubInfo = {
   username: 'itsanji',
@@ -51,6 +54,63 @@ const githubInfo = {
 };
 
 export default function Home() {
+  const [readmeContent, setReadmeContent] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchReadme = async () => {
+      try {
+        // Directly fetch README content from GitHub API
+        const readmeResponse = await fetch(`https://api.github.com/repos/${githubInfo.username}/${githubInfo.username}/readme`);
+
+        if (readmeResponse.ok) {
+          const readmeData = await readmeResponse.json();
+
+          // Decode the base64 content with proper UTF-8 handling
+          const content = decodeURIComponent(escape(atob(readmeData.content)));
+          setReadmeContent(content);
+        } else {
+          setReadmeContent('# Welcome to my GitHub Profile!\n\nThis is a placeholder for your GitHub profile README content.\n\n## About Me\n\nI am a developer passionate about learning and creating.\n\n## Skills\n\n- JavaScript/TypeScript\n- React\n- Next.js\n- And more...\n\n## Contact\n\nFeel free to reach out!');
+        }
+      } catch (error) {
+        console.error('Error fetching README:', error);
+        setReadmeContent('# Welcome to my GitHub Profile!\n\nUnable to load README content. Please check your GitHub profile repository.\n\n## About Me\n\nI am a developer passionate about learning and creating.\n\n## Skills\n\n- JavaScript/TypeScript\n- React\n- Next.js\n- And more...\n\n## Contact\n\nFeel free to reach out!');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchReadme();
+  }, []);
+
+  // Enhanced markdown to HTML converter
+  const convertMarkdownToHtml = (markdown: string) => {
+    return markdown
+      // Headers
+      .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+      .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+      .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+      // Horizontal rules
+      .replace(/^---$/gim, '<hr>')
+      // Bold and italic
+      .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+      // Images
+      .replace(/!\[([^\]]*)\]\(([^)]+)\)/gim, '<img src="$2" alt="$1" style="max-width: 100%; height: auto;" />')
+      // Links
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+      // Inline code
+      .replace(/`([^`]+)`/gim, '<code>$1</code>')
+      // Line breaks
+      .replace(/\n\n/gim, '</p><p>')
+      .replace(/\n/gim, '<br>')
+      // Wrap in paragraphs
+      .replace(/^(?!<[h|p|a|code|strong|em|br|img|hr]).*$/gim, '<p>$&</p>')
+      // Clean up empty paragraphs
+      .replace(/<p><\/p>/gim, '')
+      .replace(/<p><br><\/p>/gim, '<br>');
+  };
+
   return (
     <>
       <div className={styles['wavy-background']}>
@@ -69,34 +129,52 @@ export default function Home() {
           />
         </svg>
       </div>
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', fontFamily: 'sans-serif' }}>
-        <h1>Welcome!</h1>
-        <p>The port is opened and working. 🚀</p>
-        <p>ポートが正しく転送されている🚀</p>
-        <div style={{ marginTop: 40, background: 'rgba(255,255,255,0.8)', borderRadius: 16, padding: 24, maxWidth: 600, boxShadow: '0 2px 16px rgba(0,0,0,0.05)' }}>
-          <a href="https://github.com/itsanji" target="_blank" rel="noopener noreferrer">
-            <Image
-              src={githubInfo.avatar}
-              alt="itsanji avatar"
-              width={80}
-              height={80}
-              style={{ borderRadius: '50%', margin: '0 auto 16px auto', display: 'block', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
-            />
-          </a>
-          <h2>GitHub: <a href="https://github.com/itsanji" target="_blank" rel="noopener noreferrer">@itsanji</a></h2>
-          <p><b>Name:</b> {githubInfo.name}</p>
-          <p><b>Location:</b> {githubInfo.location}</p>
-          <p><b>Bio:</b> {githubInfo.bio}</p>
-          <p><i>&quot;{githubInfo.quote}&quot;</i></p>
-          <p><b>Followers:</b> {githubInfo.followers} &nbsp; <b>Following:</b> {githubInfo.following}</p>
-          <h3>Pinned Repositories</h3>
-          <ul style={{ paddingLeft: 20 }}>
-            {githubInfo.pinned.map(repo => (
-              <li key={repo.name} style={{ marginBottom: 8 }}>
-                <a href={repo.url} target="_blank" rel="noopener noreferrer"><b>{repo.name}</b></a> &mdash; <span>{repo.desc}</span> <span style={{ fontSize: 12, color: '#1976d2' }}>({repo.lang})</span>
-              </li>
-            ))}
-          </ul>
+
+      <div className={styles.container}>
+        <div className={styles.content}>
+          {/* Left Column - Current Information */}
+          <div className={styles.leftColumn}>
+            <div className={styles.infoCard}>
+              <a href="https://github.com/itsanji" target="_blank" rel="noopener noreferrer">
+                <Image
+                  src={githubInfo.avatar}
+                  alt="itsanji avatar"
+                  width={80}
+                  height={80}
+                  className={styles.avatar}
+                />
+              </a>
+              <h2>GitHub: <a href="https://github.com/itsanji" target="_blank" rel="noopener noreferrer">@itsanji</a></h2>
+              <p><b>Name:</b> {githubInfo.name}</p>
+              <p><b>Location:</b> {githubInfo.location}</p>
+              <p><b>Bio:</b> {githubInfo.bio}</p>
+              <p><i>&quot;{githubInfo.quote}&quot;</i></p>
+              <p><b>Followers:</b> {githubInfo.followers} &nbsp; <b>Following:</b> {githubInfo.following}</p>
+              <h3>Pinned Repositories</h3>
+              <ul className={styles.repoList}>
+                {githubInfo.pinned.map(repo => (
+                  <li key={repo.name}>
+                    <a href={repo.url} target="_blank" rel="noopener noreferrer"><b>{repo.name}</b></a> &mdash; <span>{repo.desc}</span> <span className={styles.lang}>({repo.lang})</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Right Column - GitHub README Content */}
+          <div className={styles.rightColumn}>
+            <div className={styles.readmeCard}>
+              <h2>GitHub Profile README</h2>
+              {isLoading ? (
+                <div className={styles.loading}>Loading README content...</div>
+              ) : (
+                <div
+                  className={styles.readmeContent}
+                  dangerouslySetInnerHTML={{ __html: convertMarkdownToHtml(readmeContent) }}
+                />
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </>
